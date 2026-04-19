@@ -16,21 +16,42 @@ class HomeScreen extends StatelessWidget {
         title: const Text('Mis Gastos'),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // TOTAL GENERAL
           Padding(
             padding: const EdgeInsets.all(12),
             child: Text(
               'Total: S/. ${vm.totalGeneral.toStringAsFixed(2)}',
-              style: const TextStyle(fontSize: 18),
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
 
-          // LISTA
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Alimentación: S/. ${vm.totalPorCategoria("Alimentacion").toStringAsFixed(2)}'),
+                Text('Transporte: S/. ${vm.totalPorCategoria("Transporte").toStringAsFixed(2)}'),
+                Text('Entretenimiento: S/. ${vm.totalPorCategoria("Entretenimiento").toStringAsFixed(2)}'),
+                Text('Salud: S/. ${vm.totalPorCategoria("Salud").toStringAsFixed(2)}'),
+                Text('Otros: S/. ${vm.totalPorCategoria("Otros").toStringAsFixed(2)}'),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
           Expanded(
             child: vm.gastos.isEmpty
                 ? const Center(
-              child: Text('No hay gastos registrados'),
+              child: Text(
+                'No hay gastos registrados',
+                style: TextStyle(color: Colors.grey),
+              ),
             )
                 : ListView.builder(
               itemCount: vm.gastos.length,
@@ -40,7 +61,9 @@ class HomeScreen extends StatelessWidget {
                 return ListTile(
                   title: Text(g.nombre),
                   subtitle: Text(g.categoria),
-                  trailing: Text('S/. ${g.monto}'),
+                  trailing: Text(
+                    'S/. ${g.monto.toStringAsFixed(2)}',
+                  ),
                   onTap: () {
                     Navigator.push(
                       context,
