@@ -26,22 +26,27 @@ class _RegistroScreenState extends State<RegistroScreen> {
     _descripcionCtrl.dispose();
     super.dispose();
   }
-  void _guardar() {
-// validate() ejecuta el validator de CADA campo del Form.
-// Retorna true solo si TODOS retornan null (sin error).
+  Future<void> _guardar() async {
     if (!_formKey.currentState!.validate()) return;
     final gasto = Gasto(
       nombre: _nombreCtrl.text.trim(),
       monto: double.parse(_montoCtrl.text.trim()),
       categoria: _categoriaSeleccionada!,
       descripcion: _descripcionCtrl.text.trim(),
-// fechaRegistro se genera automaticamente en el constructor
     );
-// context.read: obtiene el ViewModel SIN suscribirse a cambios.
-// Correcto aqui porque solo llamamos un metodo, no reconstruimos.
-    context.read<GastosViewModel>().agregarGasto(gasto);
-// Regresar a HomeScreen. El Consumer alli se reconstruye automaticamente.
-    Navigator.pop(context);}
+    // Agregamos "await" porque agregarGasto ahora es async.
+    // Esperamos a que se guarde en disco ANTES de hacer pop().
+    // Si hicieramos pop() antes del await, podria haber un momento
+    // donde el gasto no esta guardado aun.
+    await context.read<GastosViewModel>().agregarGasto(gasto);
+    // Verificamos que el widget siga montado antes de usar context.
+    // Es una buena practica despues de cualquier operacion async
+    // porque el usuario podria haber navegado hacia atras mientras
+    // esperabamos que se guardara el dato.
+    if (!mounted) return;
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

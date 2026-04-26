@@ -1,5 +1,3 @@
-
-
 // screens/detalle_screen.dart
 import 'package:flutter/material.dart';
 import '../models/gasto.dart';
